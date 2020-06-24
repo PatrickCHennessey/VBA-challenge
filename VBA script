@@ -1,0 +1,87 @@
+Sub TickerPricePercentVolume():
+ 
+For Each ws In Worksheets
+    
+    ws.Range("I1").Value = "Ticker"
+    ws.Range("J1").Value = "Yearly Change"
+    ws.Range("K1").Value = "Percent Change"
+    ws.Range("L1").Value = "Total Stock Volume"
+      
+    Dim Tickername As String
+    Dim Lastrow As Double
+    Dim Totaltickervolume As Double
+    Dim Summaryrow As Double
+    Dim Openprice As Double
+    Dim Closeprice As Double
+    Dim Nominalchange As Double
+    Dim Previousamount As Double
+    Dim Percentchange As Double
+    Dim Lastrowvalue As Double
+    
+    Totaltickervolume = 0
+    Summaryrow = 2
+    Previousamount = 2
+        
+    Lastrow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+    For i = 2 To Lastrow
+           
+    Totaltickervolume = Totaltickervolume + ws.Cells(i, 7).Value
+            
+    If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+        Tickername = ws.Cells(i, 1).Value
+            ws.Range("I" & Summaryrow).Value = Tickername
+            ws.Range("L" & Summaryrow).Value = Totaltickervolume
+            Totaltickervolume = 0
+              
+        Openprice = ws.Range("C" & Previousamount)
+        Closeprice = ws.Range("F" & i)
+        Nominalchange = (Closeprice - Openprice)
+        ws.Range("J" & Summaryrow).Value = Nominalchange
+                
+    If Openprice = 0 Then
+       Percentchange = 0
+       
+    Else
+        Openprice = ws.Range("C" & Previousamount)
+        Percentchange = (Nominalchange / Openprice)
+    
+    End If
+      
+        ws.Range("K" & Summaryrow).NumberFormat = "0.00%"
+        ws.Range("K" & Summaryrow).Value = Percentchange
+
+    If ws.Range("J" & Summaryrow).Value > 0 Then
+       ws.Range("J" & Summaryrow).Interior.ColorIndex = 4
+       
+    ElseIf ws.Range("J" & Summaryrow).Value < 0 Then
+           ws.Range("J" & Summaryrow).Interior.ColorIndex = 3
+           
+    Else: ws.Range("J" & Summaryrow).Interior.ColorIndex = 2
+            
+    End If
+           
+    If ws.Range("K" & Summaryrow).Value > 0 Then
+       ws.Range("K" & Summaryrow).Interior.ColorIndex = 4
+           
+    ElseIf ws.Range("K" & Summaryrow).Value < 0 Then
+           ws.Range("K" & Summaryrow).Interior.ColorIndex = 3
+           
+    Else: ws.Range("J" & Summaryrow).Interior.ColorIndex = 2
+    
+    End If
+    
+           Summaryrow = Summaryrow + 1
+           Previousamount = i + 1
+           
+    End If
+
+    Next i
+    Next ws
+
+For Each ws In Worksheets
+    ws.Cells.EntireColumn.AutoFit
+    
+    Next ws
+    
+End Sub
+
